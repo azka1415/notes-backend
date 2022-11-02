@@ -11,7 +11,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_route(notes.router)
+app.include_router(notes.router)
 
 
 @app.get('/')

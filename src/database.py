@@ -27,39 +27,34 @@ async def db_parser(cursor: Cursor):
     return notes
 
 
-async def fetch_all(current_user: dict, limit: int, skip: int, title: str):
+async def fetch_all(limit: int, skip: int, title: str):
     ''' fetch every note from owner '''
-    if current_user['role'] == 'user':
-        cursor = notes_collection.find(
-            {'title': {"$regex": title}, 'owner': current_user['email']}).limit(limit).skip(skip)
-        result = await db_parser(cursor)
-        return result
+
     cursor = notes_collection.find(
         {'title': {"$regex": title}}).limit(limit).skip(skip)
     result = await db_parser(cursor)
     return result
 
 
-async def update_note(title: str, description: str, current_user: str):
+async def update_note(title: str, description: str):
     ''' update note '''
-    notes_collection.update_one({'title': title, 'owner': current_user['email']}, {
+    notes_collection.update_one({'title': title}, {
                                 "$set": {"description": description}})
     return notes_collection.find_one({"title": title})
 
 
-async def remove_note(title: str, current_user: dict):
+async def remove_note(title: str):
     ''' remove note '''
     find = notes_collection.delete_one(
-        {"title": title, 'owner': current_user['email']})
+        {"title": title})
     if find:
         return True
     raise HTTPException(404, "Item not found")
 
 
-async def create_note(note: dict, current_user: str):
+async def create_note(note: dict):
     ''' create note '''
     note['created_at'] = datetime.now()
-    note['owner'] = current_user['email']
     print(note)
     notes_collection.insert_one(note)
     return note
