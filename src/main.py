@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
-
+from src.routers import notes
 app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
@@ -10,6 +10,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.add_route(notes.router)
 
 
 @app.get('/')
